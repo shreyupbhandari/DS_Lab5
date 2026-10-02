@@ -1,8 +1,7 @@
+import java.util.LinkedList;
+
 public class History
 {
-
-
-
     /**
        Notepad will call this function when thier text changes.
 
@@ -10,21 +9,48 @@ public class History
        position is the postion where the change took place
        Change is the string of characters that is the change.
      */
+  public record StackState(boolean deletion, int position, String change) {}
+	
+  StackState data;
+  LinkedList<StackState> undoData=new LinkedList<>();
+  LinkedList<StackState> redoData=new LinkedList<>();
+  
    public void addEvent(boolean deletion, int position, String Change)
    {
+	   
+	   data= new StackState(deletion, position, Change);
+	   undoData.push(data);
+	   redoData.clear();
+	   
    }
-
 
     /**
        Notepad will call this function when it wishes to undo the last event.
 
-       note is a variable to the Notepad that called this function
+       note is a variable sto the Notepad that called this function
      */
    public void undoEvent(NotePad note)
    {
+	   	StackState topData= undoData.poll();
+	   
+   		redoData.push(topData);
+   
+		boolean delete = topData.deletion();
+		int position =topData.position();
+		String change = topData.change();
+   
+		if (delete)
+		{
+			note.insert(position, change);
+		}
+	   
+		else
+		{
+			note.remove(position, change.length());
+		}
+	   
    }
-
-
+	
     /**
        Notepad will call this function when it wishes to redo the last event that was undone.
        Note that new actions should clear out events that can be "redone"
@@ -32,15 +58,32 @@ public class History
      */
    public void redoEvent(NotePad note)
    {
-   	
+	   StackState topData= redoData.poll();
+	   undoData.push(topData);
+	   
+		   boolean delete = topData.deletion();
+		   int position =topData.position();
+		   String change = topData.change();
+	   
+		   if (delete)
+		   {
+			   note.remove(position, change.length());
+		   }
+		   
+		   else
+		   {
+			   note.insert(position, change);
+		   }
+		 
    }
+	   
 
     /**
        returns true if there is undo data in the History
      */
    public boolean hasUndoData()
    {
-       return false;
+       return !undoData.isEmpty();
    }
 
     /**
@@ -48,7 +91,7 @@ public class History
      */
    public boolean hasReDoData()
    {
-       return false;
+       return !redoData.isEmpty();
    }
 	
 

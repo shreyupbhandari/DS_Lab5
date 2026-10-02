@@ -14,6 +14,7 @@ public class NotePad extends Application implements ChangeListener<String>
 
    private History history = new History();
    
+   
    public NotePad()
    {
    	
