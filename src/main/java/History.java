@@ -9,16 +9,15 @@ public class History
        position is the postion where the change took place
        Change is the string of characters that is the change.
      */
-  public record StackState(boolean deletion, int position, String change) {}
 	
-  StackState data;
-  LinkedList<StackState> undoData=new LinkedList<>();
-  LinkedList<StackState> redoData=new LinkedList<>();
+  private State data;
+  private LinkedList<State> undoData=new LinkedList<>();
+  private LinkedList<State> redoData=new LinkedList<>();
   
    public void addEvent(boolean deletion, int position, String Change)
    {
 	   
-	   data= new StackState(deletion, position, Change);
+	   data= new State(deletion, position, Change);
 	   undoData.push(data);
 	   redoData.clear();
 	   
@@ -31,13 +30,13 @@ public class History
      */
    public void undoEvent(NotePad note)
    {
-	   	StackState topData= undoData.poll();
+	   	State topData= undoData.pop();
 	   
    		redoData.push(topData);
    
-		boolean delete = topData.deletion();
-		int position =topData.position();
-		String change = topData.change();
+		boolean delete = topData.deletion;
+		int position =topData.position;
+		String change = topData.change;
    
 		if (delete)
 		{
@@ -58,12 +57,12 @@ public class History
      */
    public void redoEvent(NotePad note)
    {
-	   StackState topData= redoData.poll();
+	   State topData= redoData.pop();
 	   undoData.push(topData);
 	   
-		   boolean delete = topData.deletion();
-		   int position =topData.position();
-		   String change = topData.change();
+		   boolean delete = topData.deletion;
+		   int position =topData.position;
+		   String change = topData.change;
 	   
 		   if (delete)
 		   {
